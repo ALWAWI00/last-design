@@ -38,6 +38,111 @@
         .w-webflow-badge {
             display: none !important;
         }
+
+        /* Hero Centering Guarantee */
+        .hero-section {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        .hero-content-block {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            grid-template-columns: 1fr !important; /* Force out of multi-col grid if present */
+        }
+
+        .hero-left {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+            max-width: 1200px !important;
+            text-align: center !important;
+            margin: 0 auto !important;
+        }
+
+        .form-block {
+            margin: 0 auto !important;
+        }
+
+        /* Ensure heart image behaves as a proper background wrapper */
+        .hero-bg-image-wrap {
+            position: absolute !important;
+            width: 100% !important;
+            top: 0; left: 0;
+            z-index: 0 !important;
+        }
+        /* Dynamic Hero Animations */
+        @keyframes flyInLeft { 0% { opacity: 0; transform: translate(-30px, -15px); filter: blur(8px); } 100% { opacity: 1; transform: translate(0, 0); filter: blur(0); } }
+        @keyframes flyInRight { 0% { opacity: 0; transform: translate(30px, 15px); filter: blur(8px); } 100% { opacity: 1; transform: translate(0, 0); filter: blur(0); } }
+        @keyframes flyInTop { 0% { opacity: 0; transform: translate(0, -30px); filter: blur(8px); } 100% { opacity: 1; transform: translate(0, 0); filter: blur(0); } }
+        @keyframes flyInBottom { 0% { opacity: 0; transform: translate(0, 30px); filter: blur(8px); } 100% { opacity: 1; transform: translate(0, 0); filter: blur(0); } }
+        @keyframes scalePop { 0% { opacity: 0; transform: scale(0.6); } 50% { opacity: 1; transform: scale(1.08); } 75% { opacity: 1; transform: scale(0.96); } 100% { opacity: 1; transform: scale(1); } }
+
+        .anim-word { display: inline-block; opacity: 0; animation-fill-mode: forwards !important; }
+        .word-1 { animation: flyInLeft 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s; padding-right: 20px; }
+        .word-2 { animation: flyInTop 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s; }
+        .word-3 { animation: flyInRight 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s; padding-right: 20px;}
+        .word-4 { animation: flyInBottom 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.7s; padding-right: 20px;}
+        .word-5 { animation: flyInLeft 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.9s; padding-right: 20px;}
+        .word-6 { animation: flyInTop 1s cubic-bezier(0.2, 0.8, 0.2, 1) 1.1s; padding-right: 20px;}
+        .word-7 { animation: flyInRight 1s cubic-bezier(0.2, 0.8, 0.2, 1) 1.3s; }
+        
+        .anim-badge { opacity: 0; animation: scalePop 1s cubic-bezier(0.34, 1.56, 0.64, 1) 1.6s forwards !important; transform-origin: center; }
+
+        /* Typography & Readability Upgrades */
+        .hero {
+            width: 100% !important;
+            max-width: 1400px !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .heading-01.first-heading {
+            font-size: 84px !important;
+            line-height: 1.1 !important;
+            font-weight: 800 !important;
+            letter-spacing: -2px !important;
+            color: #ffffff !important;
+            text-shadow: none !important;
+            padding-bottom: 8px !important;
+            margin-bottom: 12px !important;
+            opacity: 1 !important;
+            filter: none !important;
+            transform: none !important;
+            width: 100% !important;
+            max-width: 1200px !important;
+        }
+
+        .text-lg.home-hero {
+            font-size: 26px !important;
+            font-weight: 500 !important;
+            color: rgba(255, 255, 255, 1) !important;
+            text-shadow: 0 3px 20px rgba(0, 0, 0, 1) !important;
+            letter-spacing: 0.5px !important;
+            opacity: 1 !important;
+            filter: none !important;
+            transform: none !important;
+        }
+
+        /* Eliminate all conflicting Webflow glass borders */
+        .hero-section, .hero-content-block, .hero-left, .hero, .hero-wrap, .container-large {
+            border: none !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            background-color: transparent !important;
+            opacity: 1 !important;
+            filter: none !important;
+            transform: none !important;
+        }
+
+
     </style>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous" />
@@ -87,7 +192,7 @@
                         <h2 style="margin: 0; color: white; font-size: 24px; font-weight: 700; line-height: 1;">Medifli</h2>
                     </a>
                     <nav role="navigation" class="nav-menu w-nav-menu">
-                        <div class="nav-link-wrap">
+                        <div class="nav-link-wrap" style="display: flex; gap: 32px; align-items: center;">
                             <a href="/feature" class="nav-link w-nav-link">Features</a>
                             <a href="/about-us" class="nav-link w-nav-link">About</a>
                             <a href="/pricing" class="nav-link w-nav-link">Pricing</a>
@@ -149,108 +254,46 @@
         <section class="hero-section">
             <div class="container-large">
                 <div class="hero-content-block">
-                    <div data-w-id="8dc3672a-9df3-28f8-d6ee-e76dd2bf3a76"
-                        style="opacity:0;filter:blur(5px);-webkit-transform:translate3d(0, 50px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 50px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 50px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 50px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)"
-                        class="hero-left">
+                    <div class="hero-left">
                         <div class="hero">
-                            <h1 class="heading-01 first-heading">Learn Medicine<br />Smarter Not Harder With Medifli</h1>
+                            <h1 class="heading-01 first-heading">
+                                <span class="anim-word word-1">Learn</span><span class="anim-word word-2">Medicine</span><br />
+                                <span class="anim-word word-3">Smarter</span><span class="anim-word word-4">Not</span><span class="anim-word word-5">Harder</span><span class="anim-word word-6">With</span><span class="anim-word word-7">Medifli</span>
+                            </h1>
                             <p class="text-lg home-hero">Get Faster and Earlier access</p>
-                            <div class="form-block w-form">
-                                <form id="email-form" name="email-form" data-name="Email Form" method="get" class="form"
-                                    data-wf-page-id="68fbd33cd97f330ee31625ca"
-                                    data-wf-element-id="e9c00c05-80b7-7216-96ff-aed9932e9953"><input
-                                        class="text-field w-input" maxlength="256" name="email" data-name="Email"
-                                        placeholder="Type your mail here" type="email" id="email" required="" />
-                                    <div class="newsletter-button-wrap">
-                                        <div href="#" class="button"><input type="submit" data-wait="Please wait..."
-                                                class="submit-button w-button" value="Submit" />
-                                            <div class="button-text">Free Access</div>
-                                            <div class="button-secondary-hover-bg"></div>
-                                        </div>
-                                    </div>
-                                </form>
-                                <div class="success-message w-form-done">
-                                    <div>Thank you! Your submission has been received!</div>
+                            <div class="hero-action-block anim-badge" style="margin-top: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                                <span style="
+                                    color: rgba(255, 255, 255, 0.6); 
+                                    font-size: 13px; 
+                                    text-transform: uppercase; 
+                                    letter-spacing: 3px; 
+                                    font-weight: 600;
+                                    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+                                ">Built & Powered By</span>
+                                <div style="
+                                    display: flex; 
+                                    align-items: center; 
+                                    gap: 12px; 
+                                    background: rgba(255,255,255,0.03); 
+                                    padding: 12px 32px; 
+                                    border-radius: 100px; 
+                                    border: 1px solid rgba(255,255,255,0.1); 
+                                    box-shadow: 0 8px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02);
+                                    backdrop-filter: blur(10px);
+                                ">
+                                    <h3 style="
+                                        color: #fff; 
+                                        font-size: 26px; 
+                                        font-weight: 800; 
+                                        margin: 0; 
+                                        letter-spacing: 1px; 
+                                        background: linear-gradient(90deg, #ffffff, #a8c0ff);
+                                        -webkit-background-clip: text;
+                                        -webkit-text-fill-color: transparent;
+                                        text-shadow: 0 2px 15px rgba(255,255,255,0.1);
+                                    ">MedGamma</h3>
                                 </div>
-                                <div class="error-message w-form-fail">
-                                    <div>Oops! Something went wrong while submitting the form.</div>
-                                </div>
                             </div>
-                        </div>
-                        <div class="hero-brands-block">
-                            <div data-w-id="62f35b72-b6ab-d472-f36d-52c524b0ca89" style="opacity:0"
-                                class="brand-sub-title">
-                                <div>Trusted by thousands of startups</div>
-                            </div>
-                            <div data-w-id="62f35b72-b6ab-d472-f36d-52c524b0ca8c" class="logo-wrapper">
-                                <div data-w-id="62f35b72-b6ab-d472-f36d-52c524b0ca8d" style="opacity:0"
-                                    class="brands-logo-row"><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf57fd3a46a62704519_Brannds%20Logo.svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf55b508b4ffc93aa94_Brannds%20Logo%20(1).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf50fa10c5d6258aed5_Brannds%20Logo%20(2).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf59bebfdfcd65ebe19_Brannds%20Logo%20(3).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf55b508b4ffc93aa94_Brannds%20Logo%20(1).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf570022953c0732d78_Brannds%20Logo%20(5).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf55b508b4ffc93aa94_Brannds%20Logo%20(1).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf53c228aa6bd199cad_Brannds%20Logo%20(7).svg"
-                                        alt="" class="brand-logo" /></div>
-                                <div data-w-id="62f35b72-b6ab-d472-f36d-52c524b0ca96" style="opacity:0"
-                                    class="brands-logo-row"><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf57fd3a46a62704519_Brannds%20Logo.svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf55b508b4ffc93aa94_Brannds%20Logo%20(1).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf50fa10c5d6258aed5_Brannds%20Logo%20(2).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf59bebfdfcd65ebe19_Brannds%20Logo%20(3).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf55b508b4ffc93aa94_Brannds%20Logo%20(1).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf570022953c0732d78_Brannds%20Logo%20(5).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf55b508b4ffc93aa94_Brannds%20Logo%20(1).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf53c228aa6bd199cad_Brannds%20Logo%20(7).svg"
-                                        alt="" class="brand-logo" /></div>
-                                <div data-w-id="62f35b72-b6ab-d472-f36d-52c524b0ca9f" style="opacity:0"
-                                    class="brands-logo-row"><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf57fd3a46a62704519_Brannds%20Logo.svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf55b508b4ffc93aa94_Brannds%20Logo%20(1).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf50fa10c5d6258aed5_Brannds%20Logo%20(2).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf59bebfdfcd65ebe19_Brannds%20Logo%20(3).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf55b508b4ffc93aa94_Brannds%20Logo%20(1).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf570022953c0732d78_Brannds%20Logo%20(5).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf55b508b4ffc93aa94_Brannds%20Logo%20(1).svg"
-                                        alt="" class="brand-logo" /><img loading="lazy"
-                                        src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/69072bf53c228aa6bd199cad_Brannds%20Logo%20(7).svg"
-                                        alt="" class="brand-logo" /></div>
-                                <div class="brand-logo-overlay"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div data-w-id="8adbd2d3-575e-8f56-c858-72aac311f910"
-                        style="opacity:0;filter:blur(5px);-webkit-transform:translate3d(0, 50px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 50px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 50px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 50px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)"
-                        class="hero-right">
-                        <div data-w-id="a141ab85-4f8c-9823-7354-32940de3f294" class="feature-image-wrapper">
-                            <div class="feature-banner-image-wrap is-hero"><img
-                                    sizes="(max-width: 3400px) 100vw, 3400px"
-                                    srcset="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/691f5305373495e2ec283eac_Hero%20Dashborad-p-500.png 500w, https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/691f5305373495e2ec283eac_Hero%20Dashborad-p-800.png 800w, https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/691f5305373495e2ec283eac_Hero%20Dashborad-p-1080.png 1080w, https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/691f5305373495e2ec283eac_Hero%20Dashborad-p-1600.png 1600w, https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/691f5305373495e2ec283eac_Hero%20Dashborad-p-2000.png 2000w, https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/691f5305373495e2ec283eac_Hero%20Dashborad-p-2600.png 2600w, https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/691f5305373495e2ec283eac_Hero%20Dashborad-p-3200.png 3200w, https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/691f5305373495e2ec283eac_Hero%20Dashborad.png 3400w"
-                                    alt="Feature Banner Image"
-                                    src="https://cdn.prod.website-files.com/68fbd33cd97f330ee31625d9/691f5305373495e2ec283eac_Hero%20Dashborad.png"
-                                    loading="lazy" class="feature-banner-image" /></div>
                         </div>
                     </div>
                     <div class="hero-bg-overlay"></div>
