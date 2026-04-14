@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medifli - Functional Command Center</title>
+    <!-- Premium Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Sleek Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        body {
+            background-color: #030408; 
+            color: #f8fafc;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #bg-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+            background: radial-gradient(circle at 50% 50%, rgba(15, 20, 45, 0.2) 0%, rgba(3, 4, 8, 0.95) 100%);
+        }
+
+        /* Sidebar - Smooth & Clean */
+        .sidebar {
+            width: 250px; display: flex; flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(10, 15, 25, 0.35);
+            backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+            padding: 32px 0; z-index: 10;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 12px;
+            padding: 0 24px; margin-bottom: 48px;
+            font-size: 20px; font-weight: 800; color: #fff;
+            letter-spacing: -0.5px;
+        }
+        .logo-icon {
+            width: 32px; height: 32px; 
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+        .logo-icon svg { width: 18px; height: 18px; }
+
+        .nav { display: flex; flex-direction: column; gap: 4px; padding: 0 16px; }
+        .nav-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 16px; border-radius: 10px;
+            color: #94a3b8; font-weight: 500; font-size: 14px;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .nav-item svg { width: 18px; height: 18px; stroke-width: 2px !important; }
+        .nav-item:hover { color: #f8fafc; background: rgba(255, 255, 255, 0.05); }
+        .nav-item.active { 
+            background: rgba(99, 102, 241, 0.1); color: #818cf8; 
+            box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.2);
+        }
+
+        .sidebar-bottom { margin-top: auto; padding: 0 24px; }
+        .profile { display: flex; align-items: center; gap: 12px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.05); margin-top:24px;}
+        .profile-pic { width: 36px; height: 36px; background: linear-gradient(135deg, #a78bfa, #7c3aed); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; color: #fff; }
+        .profile-info h4 { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+        .profile-info p { font-size: 11px; font-weight: 500; color: #10b981;}
+
+        /* Main Content */
+        .main-col { flex: 1; padding: 40px 48px; overflow-y: auto; overflow-x: hidden; z-index: 10; scroll-behavior: smooth;}
+        
+        .header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 24px;
+        }
+        .header-title h1 { font-size: 28px; font-weight: 800; display: flex; align-items: center; gap: 12px; margin-bottom: 6px; letter-spacing: -0.5px;}
+        .header-title p { color: #94a3b8; font-size: 14px; font-weight: 400;}
+
+        /* Dashboard Global */
+        .dashboard { display: flex; flex-direction: column; gap: 32px; width: 100%; }
+
+        /* Unified Premium Card Logic */
+        .card { 
+            background: rgba(15, 20, 30, 0.6);
+            border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            padding: 28px; display: flex; flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;
+        }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;}
+        .card-header h3 { font-size: 16px; font-weight: 600; color:#f8fafc; display:flex; align-items:center; gap:10px;}
+        .card-header h3 svg { width: 18px; height: 18px; color: #818cf8; }
+
+        /* ------------------------------------------------------------- */
+        /* WIDGET 1: QUICK LAUNCH (Interactive Form)
+        /* ------------------------------------------------------------- */
+        .launch-bar { display: flex; gap: 20px; align-items: center; background: rgba(5,10,15,0.4); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.04); flex-wrap: wrap;}
+        .input-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width:180px; }
+        .input-group label { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-left:4px;}
+        .custom-select { position: relative; width: 100%; outline: none; z-index: 50; }
+        .select-trigger {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            color: #fff; font-size: 14px; padding: 14px 16px; border-radius: 12px;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; justify-content: space-between; align-items: center; font-weight: 500;
+        }
+        .custom-select.active .select-trigger {
+            border-color: rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.1); box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+        }
+        .select-trigger svg { width: 16px; height: 16px; transition: transform 0.3s ease; }
+        .custom-select.active .select-trigger svg { transform: rotate(180deg); }
+
+        .select-dropdown {
+            position: absolute; top: calc(100% + 8px); left: 0; width: 100%;
+            background: rgba(15, 20, 30, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+            padding: 8px; z-index: 100;
+            opacity: 0; transform: translateY(10px) scale(0.95); pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .custom-select.active .select-dropdown { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+        .select-option {
+            padding: 10px 12px; font-size: 13px; font-weight: 500; color: #cbd5e1;
+            border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        .select-option:hover { background: rgba(255,255,255,0.05); color: #fff; padding-left: 18px;}
+        .select-option.selected { color: #818cf8; background: rgba(99, 102, 241, 0.1); }
+
+        @keyframes bubblePop {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.96); }
+            100% { transform: scale(1); }
+        }
+        .bubble-anim { animation: bubblePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .btn-launch {
+            background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; font-size: 14px; font-weight: 600;
+            padding: 16px 32px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); height: 100%; align-self: stretch; margin-top:20px; display:flex; align-items:center; gap:8px;
+        }
+        .btn-launch:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6); }
+        .btn-launch:active { transform: translateY(0); }
+
+        /* Row 2 */
+        .grid-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; width: 100%; }
+
+        /* ------------------------------------------------------------- */
+        /* WIDGET 2: PERFORMANCE INSIGHTS (Interactive Chart)
+        /* ------------------------------------------------------------- */
+        .tabs { display: flex; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);}
+        .tab-btn {
+            background: transparent; border: none; color: #94a3b8; font-size: 12px; font-weight: 600; padding: 6px 12px;
+            border-radius: 6px; cursor: pointer; transition: all 0.2s;
+        }
+        .tab-btn.active { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        .chart-container { height: 200px; width: 100%; position: relative; margin-top:20px; border-bottom: 1px solid rgba(255,255,255,0.1); border-left: 1px solid rgba(255,255,255,0.1); }
+        /* Real data styling */
+        svg.chart-svg { width: 100%; height: 100%; overflow: visible; transition: all 0.5s ease; }
+        .chart-path { fill: none; stroke: #818cf8; stroke-width: 3px; stroke-linecap: round; stroke-linejoin: round; transition: d 0.5s ease;}
+        .chart-area { fill: url(#chart-gradient); opacity: 0.5; transition: d 0.5s ease;}
+        
+        /* Interactive Chart Dots & Tooltips */
+        .chart-dot {
+            position: absolute; width: 12px; height: 12px;
+            background: #818cf8; border: 3px solid #0f172a; border-radius: 50%;
+            transform: translate(-50%, 50%); cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 0 10px rgba(129, 140, 248, 0.5); z-index: 10;
+        }
+        .chart-dot:hover { transform: translate(-50%, 50%) scale(1.4); background: #fff;}
+        .chart-tooltip {
+            position: absolute; background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(129, 140, 248, 0.3); border-radius: 8px;
+            padding: 10px 14px; font-size: 12px; color: #fff;
+            pointer-events: none; opacity: 0; transform: translate(-50%, -150%);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            z-index: 20; backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5); white-space: nowrap;
+        }
+        .chart-tooltip.visible { opacity: 1; transform: translate(-50%, -120%); }
+        .chart-labels { display:flex; justify-content:space-between; margin-top:12px; font-size:11px; color:#94a3b8; font-weight:600;}
+
+        /* ------------------------------------------------------------- */
+        /* WIDGET 3: ACTIVE MODULES (Progress Tracking)
+        /* ------------------------------------------------------------- */
+        .module-list { display: flex; flex-direction: column; gap: 20px; }
+        .module-item { display: flex; flex-direction: column; gap: 8px; }
+        .mod-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; }
+        .mod-header span:first-child { color: #e2e8f0; }
+        .mod-header span:last-child { color: #94a3b8; }
+        .progress-track { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 8px; overflow: hidden; position: relative;}
+        .progress-fill { height: 100%; border-radius: 8px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* ------------------------------------------------------------- */
+        /* WIDGET 4: ACTIONABLE CHECKLIST
+        /* ------------------------------------------------------------- */
+        .task-list { display: flex; flex-direction: column; gap: 12px; }
+        .task-item {
+            display: flex; align-items: flex-start; gap: 12px; padding: 14px; 
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px;
+            cursor: pointer; transition: all 0.2s; user-select: none;
+        }
+        .task-item:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+        
+        .check-box {
+            width: 20px; height: 20px; border-radius: 6px; border: 2px solid #475569; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; flex-shrink: 0; margin-top:2px;
+        }
+        .check-box svg { width: 14px; height: 14px; color: #fff; opacity: 0; transform: scale(0); transition: all 0.2s; }
+        
+        .task-info h4 { font-size: 13px; font-weight: 500; color: #e2e8f0; transition: color 0.2s; margin-bottom:2px;}
+        .task-info p { font-size: 11px; color: #64748b; }
+
+        /* Task Completed State */
+        .task-item.completed .check-box { background: #10b981; border-color: #10b981; }
+        .task-item.completed .check-box svg { opacity: 1; transform: scale(1); }
+        .task-item.completed .task-info h4 { color: #64748b; text-decoration: line-through; }
+
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon"><i data-lucide="activity"></i></div> 
+            Medifli
+        </div>
+        
+        <div class="nav">
+            <a href="quiz.html" class="nav-item active" style="text-decoration:none;"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+            <a href="quizzes.html" class="nav-item" style="text-decoration:none;"><i data-lucide="clipboard-list"></i> Quizzes</a>
+            <a href="#" class="nav-item" style="text-decoration:none;"><i data-lucide="book-open"></i> Subjects</a>
+            <a href="#" class="nav-item" style="text-decoration:none;"><i data-lucide="bar-chart-2"></i> Analytics</a>
+            <a href="#" class="nav-item" style="text-decoration:none;"><i data-lucide="brain-circuit"></i> AI Tutor</a>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="nav-item" style="color:#64748b;"><i data-lucide="settings"></i> Settings</div>
+            <div class="profile">
+                <div class="profile-pic">AJ</div>
+                <div class="profile-info">
+                    <h4>Alex Johnson</h4>
+                    <p>USMLE Step 1</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-col">
+        <header class="header">
+            <div class="header-title">
+                <h1>Command Center</h1>
+                <p>Focus on execution. Track your progress and launch sessions directly.</p>
+            </div>
+        </header>
+
+        <section class="dashboard">
+            <!-- Functional Widget 1: Quick-Launch Console -->
+            <div class="card" style="z-index: 100 !important;">
+                <div class="card-header" style="margin-bottom: 20px;">
+                    <h3><i data-lucide="rocket"></i> Quick-Launch Session</h3>
+                </div>
+                <div class="launch-bar">
+                    <div class="input-group">
+                        <label>Course</label>
+                        <div class="custom-select" tabindex="0">
+                            <div class="select-trigger">
+                                <span>Internal Medicine</span>
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                            <div class="select-dropdown">
+                                <div class="select-option selected">Internal Medicine</div>
+                                <div class="select-option">Pediatrics Basics</div>
+                                <div class="select-option">Advanced Surgery</div>
+                                <div class="select-option">OBGYN Series</div>
+                                <div class="select-option">Emergency Focus</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Target Subject</label>
+                        <div class="custom-select" tabindex="0">
+                            <div class="select-trigger">
+                                <span>Cardiology</span>
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                            <div class="select-dropdown">
+                                <div class="select-option selected">Cardiology</div>
+                                <div class="select-option">Neurology</div>
+                                <div class="select-option">Pharmacology</div>
+                                <div class="select-option">Anatomy</div>
+                                <div class="select-option">Pathology</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Study Mode</label>
+                        <div class="custom-select" tabindex="0">
+                            <div class="select-trigger">
+                                <span>Question Bank (MCQ)</span>
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                            <div class="select-dropdown">
+                                <div class="select-option selected">Question Bank (MCQ)</div>
+                                <div class="select-option">Spaced Flashcards</div>
+                                <div class="select-option">Mock Exam</div>
+                                <div class="select-option">AI Concept Tutor</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Difficulty Filter</label>
+                        <div class="custom-select" tabindex="0">
+                            <div class="select-trigger">
+                                <span>Smart Blend (Recommended)</span>
+                                <i data-lucide="chevron-down"></i>
+                            </div>
+                            <div class="select-dropdown">
+                                <div class="select-option selected">Smart Blend (Recommended)</div>
+                                <div class="select-option">High-Yield Only</div>
+                                <div class="select-option">My Weaknesses</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-launch" onclick="alert('System initializing study session module...')">
+                        Launch <i data-lucide="play" style="width:16px; height:16px;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row 2: Metrics and Tracking -->
+            <div class="grid-row">
+
+                <!-- Functional Widget 2: Performance Insights -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i data-lucide="trending-up"></i> Study Consistency</h3>
+                        <!-- Functional JS Tabs -->
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="updateChart('1w', this)">1W</button>
+                            <button class="tab-btn" onclick="updateChart('1m', this)">1M</button>
+                            <button class="tab-btn" onclick="updateChart('all', this)">ALL</button>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; gap:24px; margin-bottom:16px;">
+                        <div>
+                            <p style="font-size:10px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Studied</p>
+                            <p id="stat-hours" style="font-size:22px; font-weight:800; color:#fff; letter-spacing:-0.5px;">-</p>
+                        </div>
+                        <div>
+                            <p style="font-size:10px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Avg Accuracy</p>
+                            <p id="stat-acc" style="font-size:22px; font-weight:800; color:#34d399; letter-spacing:-0.5px;">-</p>
+                        </div>
+                    </div>
+
+                    <div class="chart-container" id="chart-wrapper">
+                        <!-- Y Axis labels dynamically updated using JS -->
+                        <div style="position:absolute; bottom:0; left:-25px; font-size:10px; color:#64748b;">0h</div>
+                        <div id="y-axis-mid" style="position:absolute; bottom:50%; left:-25px; font-size:10px; color:#64748b; transform: translateY(50%);">5h</div>
+                        <div id="y-axis-max" style="position:absolute; top:0; left:-25px; font-size:10px; color:#64748b; transform: translateY(-50%);">10h</div>
+                        
+                        <div style="position:absolute; bottom:50%; width:100%; height:1px; background:rgba(255,255,255,0.05);"></div>
+                        
+                        <svg class="chart-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="rgba(99, 102, 241, 0.4)"/>
+                                    <stop offset="100%" stop-color="rgba(99, 102, 241, 0)"/>
+                                </linearGradient>
+                            </defs>
+                            <path id="chartFill" class="chart-area" d=""/>
+                            <path id="chartLine" class="chart-path" d=""/>
+                        </svg>
+
+                        <!-- Tooltip Element -->
+                        <div id="chartTooltip" class="chart-tooltip">
+                            <div id="tt-date" style="font-weight:700; color:#cbd5e1; margin-bottom:6px;"></div>
+                            <div style="display:flex; gap:16px;">
+                                <div style="color:#818cf8;"><span id="tt-hours" style="font-weight:800;"></span> Hrs</div>
+                                <div style="color:#34d399;"><span id="tt-acc" style="font-weight:800;"></span>% Acc</div>
+                            </div>
+                        </div>
+
+                        <!-- Dots Container overlaying the SVG precisely -->
+                        <div id="dotsContainer" style="position:absolute; top:0; left:0; width:100%; height:100%;"></div>
+                    </div>
+                    <div id="x-axis-labels" class="chart-labels">
+                        <!-- Dynamic Labels Injected Here -->
+                    </div>
+                </div>
+
+                <!-- Functional Widget 3: Active Modules -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i data-lucide="book"></i> Active Modules</h3>
+                    </div>
+                    
+                    <div class="module-list">
+                        <!-- Module 1 -->
+                        <div class="module-item">
+                            <div class="mod-header">
+                                <span>Cardiology</span>
+                                <span>85%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: 85%; background: linear-gradient(90deg, #3b82f6, #60a5fa); box-shadow: 0 0 10px rgba(59,130,246,0.6);"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Module 2 -->
+                        <div class="module-item">
+                            <div class="mod-header">
+                                <span>Neurology</span>
+                                <span>60%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: 60%; background: linear-gradient(90deg, #4f46e5, #6366f1); box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);"></div>
+                            </div>
+                        </div>
+
+                        <!-- Module 3 -->
+                        <div class="module-item">
+                            <div class="mod-header">
+                                <span>Pharmacology</span>
+                                <span>35%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: 35%; background: linear-gradient(90deg, #0284c7, #0ea5e9); box-shadow: 0 0 10px rgba(2, 132, 199, 0.6);"></div>
+                            </div>
+                        </div>
+
+                        <!-- Module 4 -->
+                        <div class="module-item">
+                            <div class="mod-header">
+                                <span>Pathology</span>
+                                <span>12%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: 12%; background: linear-gradient(90deg, #475569, #64748b); box-shadow: 0 0 10px rgba(71, 85, 105, 0.6);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Functional Widget 4: Actionable Checklist -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i data-lucide="check-square"></i> Daily Action Items</h3>
+                    </div>
+                    
+                    <div class="task-list">
+                        <!-- Functional JS Tasks -->
+                        <div class="task-item" onclick="toggleTask(this)">
+                            <div class="check-box"><i data-lucide="check"></i></div>
+                            <div class="task-info">
+                                <h4>Review Flashcards</h4>
+                                <p>150 cards due today</p>
+                            </div>
+                        </div>
+
+                        <div class="task-item" onclick="toggleTask(this)">
+                            <div class="check-box"><i data-lucide="check"></i></div>
+                            <div class="task-info">
+                                <h4>Cardio Mock Exam</h4>
+                                <p>40 Questions, Timed</p>
+                            </div>
+                        </div>
+
+                        <div class="task-item" onclick="toggleTask(this)">
+                            <div class="check-box"><i data-lucide="check"></i></div>
+                            <div class="task-info">
+                                <h4>Read Patho Chapter 4</h4>
+                                <p>Inflammation & Repair</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- New Functional Widget: Explore Courses -->
+            <div class="card course-widget" style="background: linear-gradient(135deg, rgba(30, 40, 70, 0.4) 0%, rgba(15, 20, 35, 0.6) 100%); border-top: 1px solid rgba(99, 102, 241, 0.3); display: flex; flex-direction: column;">
+                
+                <!-- Featured Top Course -->
+                <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:32px; margin-bottom:32px;">
+                    <div style="display:flex; align-items:center; gap:24px;">
+                        <div class="widget-icon" style="background: rgba(99, 102, 241, 0.15); color:#818cf8; border-color: rgba(99, 102, 241,0.3); width: 64px; height: 64px; border-radius: 20px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-compass"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                        </div>
+                        <div>
+                            <h4 style="font-size:12px; color:#818cf8; margin-bottom:6px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; display:flex; align-items:center; gap:6px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-stars"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                                Recommended Course
+                            </h4>
+                            <h2 style="font-size:26px; font-weight:800; color:#fff; letter-spacing:-0.5px; margin-bottom: 4px;">Internal Medicine <span style="font-size:16px; color:#cbd5e1; font-weight:500;">by QuickMed</span></h2>
+                            <p style="font-size:14px; color:#94a3b8;">High-yield clinical integration targeting your weakest modules.</p>
+                        </div>
+                    </div>
+                    <button class="btn-launch" style="margin-top:0; border-radius:100px; padding: 14px 32px; background: #fff; color: #0f172a; box-shadow: 0 4px 15px rgba(255,255,255,0.2);">
+                        Explore Course <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </button>
+                </div>
+
+                <!-- 4 Course Selection Grid -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h4 style="font-size:14px; color:#f8fafc; font-weight:700;">More Top Courses</h4>
+                    <span style="font-size:12px; font-weight:600; color:#818cf8; cursor:pointer;">View Collection &rarr;</span>
+                </div>
+                
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px;">
+                    <!-- Course 1 -->
+                    <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:16px; padding:16px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(59, 130, 246, 0.05)'; this.style.borderColor='rgba(59, 130, 246, 0.4)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='rgba(255,255,255,0.04)'; this.style.transform='translateY(0)'">
+                        <div style="width:100%; height:90px; background:linear-gradient(135deg, rgba(59,130,246,0.1), rgba(96,165,250,0.2)); border: 1px solid rgba(255,255,255,0.03); border-radius:10px; margin-bottom:16px; display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9C8.8 1 15.2 1 19.1 4.9C23 8.8 23 15.2 19.1 19.1C15.2 23 8.8 23 4.9 19.1Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </div>
+                        <h4 style="font-size:14px; font-weight:700; color:#e2e8f0; margin-bottom:4px;">Pediatrics Basics</h4>
+                        <p style="font-size:12px; color:#64748b;">By QuickMed &bull; 40 Modules</p>
+                    </div>
+                    
+                    <!-- Course 2 -->
+                    <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:16px; padding:16px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(99, 102, 241, 0.05)'; this.style.borderColor='rgba(99, 102, 241, 0.4)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='rgba(255,255,255,0.04)'; this.style.transform='translateY(0)'">
+                        <div style="width:100%; height:90px; background:linear-gradient(135deg, rgba(79,70,229,0.1), rgba(129,140,248,0.2)); border: 1px solid rgba(255,255,255,0.03); border-radius:10px; margin-bottom:16px; display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                        </div>
+                        <h4 style="font-size:14px; font-weight:700; color:#e2e8f0; margin-bottom:4px;">Advanced Surgery</h4>
+                        <p style="font-size:12px; color:#64748b;">By MedElite &bull; 62 Modules</p>
+                    </div>
+
+                    <!-- Course 3 -->
+                    <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:16px; padding:16px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(45, 212, 191, 0.05)'; this.style.borderColor='rgba(45, 212, 191, 0.4)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='rgba(255,255,255,0.04)'; this.style.transform='translateY(0)'">
+                        <div style="width:100%; height:90px; background:linear-gradient(135deg, rgba(20,184,166,0.1), rgba(45,212,191,0.2)); border: 1px solid rgba(255,255,255,0.03); border-radius:10px; margin-bottom:16px; display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+                        </div>
+                        <h4 style="font-size:14px; font-weight:700; color:#e2e8f0; margin-bottom:4px;">OBGYN Series</h4>
+                        <p style="font-size:12px; color:#64748b;">By Dr. Rivers &bull; 85 Modules</p>
+                    </div>
+
+                    <!-- Course 4 -->
+                    <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:16px; padding:16px; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='rgba(14, 165, 233, 0.05)'; this.style.borderColor='rgba(14, 165, 233, 0.4)'; this.style.transform='translateY(-4px)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='rgba(255,255,255,0.04)'; this.style.transform='translateY(0)'">
+                        <div style="width:100%; height:90px; background:linear-gradient(135deg, rgba(2,132,199,0.1), rgba(56,189,248,0.2)); border: 1px solid rgba(255,255,255,0.03); border-radius:10px; margin-bottom:16px; display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+                        </div>
+                        <h4 style="font-size:14px; font-weight:700; color:#e2e8f0; margin-bottom:4px;">Emergency Focus</h4>
+                        <p style="font-size:12px; color:#64748b;">By QuickMed &bull; 120 Modules</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Application Logic & UI Interactions -->
+    <script>
+        // Init SVGs
+        lucide.createIcons();
+
+        // Custom Select Logic
+        document.querySelectorAll('.custom-select').forEach(customSelect => {
+            const trigger = customSelect.querySelector('.select-trigger');
+            const options = customSelect.querySelectorAll('.select-option');
+            const span = trigger.querySelector('span');
+
+            trigger.addEventListener('click', (e) => {
+                // close others
+                document.querySelectorAll('.custom-select').forEach(cs => {
+                    if(cs !== customSelect) cs.classList.remove('active');
+                });
+                customSelect.classList.toggle('active');
+                e.stopPropagation();
+            });
+
+            options.forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    // update text
+                    span.textContent = opt.textContent;
+                    // update selected class
+                    options.forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    // close dropdown
+                    customSelect.classList.remove('active');
+                    
+                    // Trigger bubble pop animation
+                    trigger.classList.remove('bubble-anim');
+                    void trigger.offsetWidth; // trigger reflow
+                    trigger.classList.add('bubble-anim');
+                    
+                    e.stopPropagation();
+                });
+            });
+        });
+
+        // close on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.custom-select')) {
+                document.querySelectorAll('.custom-select').forEach(cs => cs.classList.remove('active'));
+            }
+        });
+
+        // Checkbox interaction script
+        function toggleTask(element) {
+            element.classList.toggle('completed');
+        }
+
+        // Dynamic Authentic Chart Data Mapping
+        const realChartData = {
+            '1w': {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                hours: [1.5, 3, 2.5, 5, 4, 7.5, 4.5],
+                acc: [75, 80, 82, 88, 85, 92, 86],
+                totalH: '28h',
+                avgAcc: '84%',
+                maxH: 10
+            },
+            '1m': {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                hours: [18, 24, 20, 28],
+                acc: [78, 82, 80, 88],
+                totalH: '90h',
+                avgAcc: '82%',
+                maxH: 35
+            },
+            'all': {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                hours: [40, 55, 60, 45, 80, 70],
+                acc: [65, 70, 75, 80, 85, 90],
+                totalH: '350h',
+                avgAcc: '77%',
+                maxH: 100
+            }
+        };
+
+        function updateChart(period, btnElement) {
+            if(btnElement) {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                btnElement.classList.add('active');
+            }
+
+            const data = realChartData[period];
+            
+            // 1. Update Core UI Stats & Axes mathematically
+            document.getElementById('stat-hours').textContent = data.totalH;
+            document.getElementById('stat-acc').textContent = data.avgAcc;
+            document.getElementById('y-axis-max').textContent = data.maxH + 'h';
+            document.getElementById('y-axis-mid').textContent = (data.maxH / 2) + 'h';
+
+            // 2. Map Dynamic X-Axis Labels
+            document.getElementById('x-axis-labels').innerHTML = data.labels.map(l => `<span>${l}</span>`).join('');
+
+            // 3. Render SVG Paths & Hover Points
+            const len = data.hours.length;
+            let lineStr = "";
+            const dotsContainer = document.getElementById('dotsContainer');
+            const tooltip = document.getElementById('chartTooltip');
+            
+            dotsContainer.innerHTML = ''; // Wipe old dots when switching tabs
+
+            data.hours.forEach((val, i) => {
+                const xPercent = (i / (len - 1)) * 100;
+                const yPercent = 100 - (Math.min(val, data.maxH) / data.maxH) * 100;
+                
+                // SVG Draw command
+                lineStr += `${i === 0 ? 'M' : 'L'} ${xPercent} ${yPercent} `;
+
+                // Inject absolute interactive HTML hover dot
+                const dot = document.createElement('div');
+                dot.className = 'chart-dot';
+                dot.style.left = `${xPercent}%`;
+                dot.style.bottom = `${(val / data.maxH) * 100}%`;
+                
+                // Tooltip injection logic
+                dot.addEventListener('mouseenter', () => {
+                    tooltip.style.left = `${xPercent}%`;
+                    tooltip.style.bottom = `${(val / data.maxH) * 100}%`;
+                    document.getElementById('tt-date').textContent = data.labels[i];
+                    document.getElementById('tt-hours').textContent = val;
+                    document.getElementById('tt-acc').textContent = data.acc[i];
+                    tooltip.classList.add('visible');
+                });
+                dot.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('visible');
+                });
+
+                dotsContainer.appendChild(dot);
+            });
+
+            const fillStr = lineStr + `L 100 100 L 0 100 Z`;
+            
+            // Execute SVG Morph Animation
+            document.getElementById('chartLine').setAttribute('d', lineStr.trim());
+            document.getElementById('chartFill').setAttribute('d', fillStr.trim());
+        }
+
+        // Initialize First Mount Data Payload
+        window.addEventListener('DOMContentLoaded', () => {
+            updateChart('1w', document.querySelector('.tab-btn.active'));
+        });
+
+        // PS5-Style Cinematic Atmospherics (Bokeh & God Rays)
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            ctx.fillStyle = '#030408';
+            ctx.fillRect(0, 0, width, height);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let mouseX = width / 2, mouseY = height / 2;
+        let targetX = width / 2, targetY = height / 2;
+        window.addEventListener('mousemove', (e) => { targetX = e.clientX; targetY = e.clientY; });
+
+        const particles = [];
+        const numParticles = 300; 
+
+        for (let i = 0; i < numParticles; i++) {
+            // Z depth: 0 is closest (massive bokeh blur), 1 is farthest (tiny sharp dot)
+            const z = Math.random(); 
+            
+            let size = 0;
+            if (z < 0.15) size = Math.random() * 20 + 15; // Massive foreground bokeh blobs
+            else if (z < 0.6) size = Math.random() * 4 + 1.5; // Midground sharp glowing dust
+            else size = Math.random() * 1.5 + 0.5; // Distant background dust
+            
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                z: z,
+                size: size,
+                vx: (Math.random() - 0.5) * 0.15,
+                vy: (Math.random() * -0.3) - 0.1, // Drifting slowly upward like warm air
+                wobbleSpeed: Math.random() * 0.015 + 0.005,
+                wobbleAngle: Math.random() * Math.PI * 2,
+                wobbleDist: Math.random() * 0.3 + 0.1,
+                alpha: Math.random() * 0.6 + 0.2
+            });
+        }
+
+        // Pre-sort so distant items are drawn first and large bokeh overlap them
+        particles.sort((a,b) => b.z - a.z);
+
+        function draw() {
+            // Base Space (Deep Navy Abyss)
+            ctx.fillStyle = '#030408';
+            ctx.fillRect(0, 0, width, height);
+
+            // Heavy, slow cinematic parallax tracking
+            mouseX += (targetX - mouseX) * 0.03;
+            mouseY += (targetY - mouseY) * 0.03;
+            const pxOffset = (mouseX - width/2);
+            const pyOffset = (mouseY - height/2);
+
+            ctx.globalCompositeOperation = 'screen';
+
+            // Volumetric God Rays (Light beam cutting diagonally from top left)
+            const rayGrad = ctx.createLinearGradient(0, 0, width * 0.8, height * 0.8);
+            rayGrad.addColorStop(0, 'rgba(56, 189, 248, 0.12)'); // Soft sky blue top left
+            rayGrad.addColorStop(0.3, 'rgba(79, 70, 229, 0.08)'); // Indigo transition
+            rayGrad.addColorStop(1, 'rgba(3, 4, 8, 0)'); // Fading off bottom right
+            
+            ctx.fillStyle = rayGrad;
+            ctx.fillRect(0, 0, width, height);
+
+            particles.forEach(p => {
+                // Organic drift mechanics
+                p.wobbleAngle += p.wobbleSpeed;
+                p.x += p.vx + Math.sin(p.wobbleAngle) * p.wobbleDist;
+                p.y += p.vy;
+
+                // Deep screen wrap for infinite loop
+                if(p.x < -150) p.x = width + 150;
+                if(p.x > width + 150) p.x = -150;
+                if(p.y < -150) p.y = height + 150;
+                if(p.y > height + 150) p.y = -150;
+
+                // Cinematic Parallax (Foreground moves aggressively contrary to mouse)
+                const prlxX = pxOffset * (1 - p.z) * 0.08;
+                const prlxY = pyOffset * (1 - p.z) * 0.08;
+                
+                const finalX = p.x - prlxX;
+                const finalY = p.y - prlxY;
+
+                // Rendering Depth of Field logic
+                const grad = ctx.createRadialGradient(finalX, finalY, 0, finalX, finalY, p.size);
+                if (p.z < 0.15) { 
+                    // Foreground Massive Bokeh: highly transparent, deep blue/indigo hue
+                    grad.addColorStop(0, `rgba(165, 180, 252, ${p.alpha * 0.25})`); 
+                    grad.addColorStop(0.5, `rgba(165, 180, 252, ${p.alpha * 0.1})`);
+                    grad.addColorStop(1, 'rgba(165, 180, 252, 0)');
+                } else if (p.z < 0.6) { 
+                    // Midground sharp dust: solid white core, bright blue glow
+                    grad.addColorStop(0, `rgba(255, 255, 255, ${p.alpha})`);
+                    grad.addColorStop(0.2, `rgba(165, 180, 252, ${p.alpha * 0.8})`);
+                    grad.addColorStop(1, 'rgba(129, 140, 248, 0)');
+                } else { 
+                    // Distant tiny dust
+                    grad.addColorStop(0, `rgba(226, 232, 240, ${p.alpha * 0.5})`);
+                    grad.addColorStop(1, 'rgba(226, 232, 240, 0)');
+                }
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(finalX, finalY, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.globalCompositeOperation = 'source-over';
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
+</body>
+</html>
