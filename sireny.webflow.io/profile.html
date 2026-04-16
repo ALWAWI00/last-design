@@ -175,12 +175,7 @@
         }
 
         /* PROFILE SECTION */
-        .profile-container {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 40px;
-            width: 100%;
-        }
+        /* PROFILE SECTION (Handled by Orientation CSS below) */
 
         .card {
             background: rgba(15, 23, 42, 0.4);
@@ -316,6 +311,73 @@
             flex-wrap: wrap;
             gap: 12px;
             margin-top: 24px;
+        }
+
+            text-transform: uppercase;
+        }
+
+        /* ── FORMS & ORIENTATION ── */
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .input-group input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #fff;
+            padding: 18px 36px;
+            border-radius: 14px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+            margin-top: 10px;
+            align-self: flex-start;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.5);
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
+
+        .save-btn:active {
+            transform: translateY(0);
         }
 
         .badge {
@@ -461,6 +523,30 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="section-title" style="margin-top: 40px;">
+                        <i data-lucide="shield-check" style="color: #10b981;"></i>
+                        Security & Privacy
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="detail-label">Change Email Address</label>
+                        <input type="email" placeholder="new-email@example.com" value="hussein@student2024">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="detail-label">Current Password</label>
+                        <input type="password" placeholder="••••••••">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="detail-label">New Password</label>
+                        <input type="password" placeholder="Enter new password">
+                    </div>
+
+                    <button class="save-btn">
+                        <i data-lucide="save"></i> Save Account Changes
+                    </button>
 
                     <div class="section-title" style="margin-top: 40px;">
                         <i data-lucide="settings" style="color: #94a3b8;"></i>
